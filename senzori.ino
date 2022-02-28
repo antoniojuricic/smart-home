@@ -14,14 +14,14 @@ float LUX_THRESHOLD = 60, TEMP_THRESHOLD = 20, HUM_THRESHOLD = 50, PRESSURE_THRE
 sensors_event_t temp_event, pressure_event;
 float current_temp, current_hum, previous_pressure;
 int counter = 0, j;
+int BUFFER_SIZE = 120;
 
 struct values {
   float temperature;
   float humidity;
 };
 
-values buffer[120];
-vector<values> vector(buffer);
+vector<values> buffer(BUFFER_SIZE);
 
 void setup() {
   Serial.begin(19200);
@@ -50,29 +50,28 @@ void setup() {
 void loop() {
     ++counter;
 
-    if (vector.size() == vector.max_size()) {
-    vector.remove(0);
+    if (buffer.size() == buffer.max_size()) {
+      buffer.remove(0);
     }
 
-    values tmp = {tmp116.readTemperature(), ssenseHDC2010.readHumidity()};
-    vector.push_back(tmp);
+    buffer.push_back({tmp116.readTemperature(), ssenseHDC2010.readHumidity()});
 
     if (counter == 6) {
       float sumH = 0, sumT = 0;
       
-      for (j = 0; j < vector.size(); ++j) {
-        sumT += vector[j].temperature;
-        sumH += vector[j].humidity;
+      for (j = 0; j < buffer.size(); ++j) {
+        sumT += buffer[j].temperature;
+        sumH += buffer[j].humidity;
       }
       
       Serial.print(" T");
-      current_temp = sumT / vector.size();
+      current_temp = sumT / buffer.size();
       Serial.print(current_temp);
 
       Serial.print(" t");
       Serial.print(turnHeaterOn(current_temp));
 
-      current_hum = sumH / vector.size();
+      current_hum = sumH / buffer.size();
       Serial.print(" H");
       Serial.print(current_hum);
 
