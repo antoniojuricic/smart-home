@@ -14,13 +14,12 @@ float LUX_THRESHOLD = 60, TEMP_THRESHOLD = 20, HUM_THRESHOLD = 50, PRESSURE_THRE
 sensors_event_t temp_event, pressure_event;
 float current_temp, current_hum, previous_pressure;
 int counter = 0, j;
-int BUFFER_SIZE = 120;
+int BUFFER_SIZE = 60;
 
 struct values {
   float temperature;
   float humidity;
 };
-
 vector<values> buffer(BUFFER_SIZE);
 
 void setup() {
@@ -53,7 +52,6 @@ void loop() {
     if (buffer.size() == buffer.max_size()) {
       buffer.remove(0);
     }
-
     buffer.push_back({tmp116.readTemperature(), ssenseHDC2010.readHumidity()});
 
     if (counter == 6) {
@@ -89,7 +87,7 @@ void loop() {
       Serial.print(isDoorOpened(pressure_event.pressure));
       Serial.print(" l");
       Serial.print(turnLightOn(result.lux));
-      delay(100);
+      delay(500);
     }
 }
 
