@@ -65,18 +65,18 @@ void loop() {
         sumH += vector[j].humidity;
       }
       
-      Serial.print("T");
+      Serial.print(" T");
       current_temp = sumT / vector.size();
       Serial.print(current_temp);
 
-      Serial.print("t");
+      Serial.print(" t");
       Serial.print(turnHeaterOn(current_temp));
 
       current_hum = sumH / vector.size();
-      Serial.print("H");
+      Serial.print(" H");
       Serial.print(current_hum);
 
-      Serial.print("h");
+      Serial.print(" h");
       Serial.print(turnHumidifierOn(current_hum));
 
       previous_pressure = pressure_event.pressure;
@@ -87,9 +87,9 @@ void loop() {
       dps.getEvents(&temp_event, &pressure_event);
       OPT3001 result = opt3001.readResult();
       Serial.print(" w");
-      Serial.print(openWindow(pressure_event.pressure));
+      Serial.print(isDoorOpened(pressure_event.pressure));
       Serial.print(" l");
-      Serial.print(lightOn(result.lux));
+      Serial.print(turnLightOn(result.lux));
       delay(100);
     }
 }
@@ -99,7 +99,7 @@ int turnLightOn(float intensity) {
   else return 0;
 }  
 
-int isRoomOpen(float current_pressure) {
+int isDoorOpened(float current_pressure) {
   if (current_pressure - previous_pressure >= PRESSURE_THRESHOLD) return 1;
   else return 0;
 }
